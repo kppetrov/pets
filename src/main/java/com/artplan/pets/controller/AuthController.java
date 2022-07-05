@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.artplan.pets.dto.ApiResponse;
-import com.artplan.pets.dto.LoginDto;
+import com.artplan.pets.dto.LoginRequest;
 import com.artplan.pets.entity.User;
 import com.artplan.pets.service.UserService;
 
@@ -46,18 +46,18 @@ public class AuthController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<ApiResponse> register(@RequestBody LoginDto loginDto, HttpServletRequest request) {
+    public ResponseEntity<ApiResponse> register(@RequestBody LoginRequest loginRequest, HttpServletRequest request) {
 
         // todo check name
 
-        userService.add(new User(loginDto.getName(), passwordEncoder.encode(loginDto.getPassword())));
-        authenticateUserAndSetSession(request, loginDto.getName(), loginDto.getPassword());
+        userService.add(new User(loginRequest.getName(), passwordEncoder.encode(loginRequest.getPassword())));
+        authenticateUserAndSetSession(request, loginRequest.getName(), loginRequest.getPassword());
         return ResponseEntity.ok(new ApiResponse(Boolean.TRUE, "User registered successfully"));
     }
 
     @PostMapping("/login")
-    public ResponseEntity<ApiResponse> login(@RequestBody LoginDto loginDto, HttpServletRequest request) {
-        authenticateUserAndSetSession(request, loginDto.getName(), loginDto.getPassword());
+    public ResponseEntity<ApiResponse> login(@RequestBody LoginRequest loginRequest, HttpServletRequest request) {
+        authenticateUserAndSetSession(request, loginRequest.getName(), loginRequest.getPassword());
         return ResponseEntity.ok(new ApiResponse(Boolean.TRUE, "Authentication successfully"));
     }
 

@@ -27,8 +27,8 @@ public class User {
     @Column(name = "id")
     private Long id;
 
-    @Column(name = "name", nullable = false, unique = true, length = 25)
-    private String name;
+    @Column(name = "username", nullable = false, unique = true, length = 25)
+    private String username;
 
     @Column(name = "password", nullable = false, length = 255)
     private String password;
@@ -38,8 +38,8 @@ public class User {
     @ColumnDefault("USER")
     private Role role;
 
-    public User(String name, String password) {
-        this.name = name;
+    public User(String username, String password) {
+        this.username = username;
         this.password = password;
     }
 }
