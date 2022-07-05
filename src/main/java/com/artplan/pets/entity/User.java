@@ -38,4 +38,8 @@ public class User {
     @ColumnDefault("USER")
     private Role role;
 
+    public User(String name, String password) {
+        this.name = name;
+        this.password = password;
+    }
 }
