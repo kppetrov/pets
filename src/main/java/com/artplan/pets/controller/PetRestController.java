@@ -13,7 +13,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.artplan.pets.dto.PetDto;
+import com.artplan.pets.dto.PetDtoRequest;
+import com.artplan.pets.dto.PetDtoResponse;
 import com.artplan.pets.service.PetService;
 
 @RestController
@@ -29,26 +30,26 @@ public class PetRestController {
 
     @GetMapping("/pets")
     @PreAuthorize("hasAuthority('pet:read')")
-    public List<PetDto> getAll() {
+    public List<PetDtoResponse> getAll() {
         return petService.findAll();
     }
 
     @GetMapping("/pets/{id}")
     @PreAuthorize("hasAuthority('pet:read')")
-    public PetDto getPet(@PathVariable Long id) {
+    public PetDtoResponse getPet(@PathVariable Long id) {
         return petService.getById(id);
     }
 
     @PostMapping("/pets")
     @PreAuthorize("hasAuthority('pet:write')")
-    public PetDto addPet(@RequestBody PetDto pet) {
+    public PetDtoResponse addPet(@RequestBody PetDtoRequest pet) {
         return petService.add(pet);
     }
 
     @PutMapping("/pets")
     @PreAuthorize("hasAuthority('pet:write')")
-    public PetDto updatePet(@RequestBody PetDto item) {
-        return petService.update(item);
+    public PetDtoResponse updatePet(@RequestBody PetDtoRequest pet) {
+        return petService.update(pet);
     }
 
     @DeleteMapping("/pets/{id}")

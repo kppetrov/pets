@@ -1,5 +1,7 @@
 package com.artplan.pets.service.impl;
 
+import javax.transaction.Transactional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -10,6 +12,7 @@ import com.artplan.pets.repository.UserRepository;
 import com.artplan.pets.service.UserService;
 
 @Service
+@Transactional
 public class UserServiceImpl implements UserService {
     
     private UserRepository userRepository;

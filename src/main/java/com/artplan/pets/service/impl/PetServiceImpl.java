@@ -9,7 +9,8 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.artplan.pets.dto.PetDto;
+import com.artplan.pets.dto.PetDtoRequest;
+import com.artplan.pets.dto.PetDtoResponse;
 import com.artplan.pets.entity.Pet;
 import com.artplan.pets.repository.PetRepository;
 import com.artplan.pets.service.PetService;
@@ -31,29 +32,29 @@ public class PetServiceImpl implements PetService {
     }
 
     @Override
-    public List<PetDto> findAll() {
+    public List<PetDtoResponse> findAll() {
         return petRepository.findAll()
                 .stream()
-                .map(pet -> modelMapper.map(pet, PetDto.class))
+                .map(pet -> modelMapper.map(pet, PetDtoResponse.class))
                 .collect(Collectors.toList());
     }
 
     @Override
-    public PetDto getById(Long id) {
-        return modelMapper.map(petRepository.getReferenceById(id), PetDto.class);
+    public PetDtoResponse getById(Long id) {
+        return modelMapper.map(petRepository.getReferenceById(id), PetDtoResponse.class);
     }
 
     @Override
-    public PetDto add(PetDto pet) {
+    public PetDtoResponse add(PetDtoRequest pet) {
         Pet item = modelMapper.map(pet, Pet.class);
         item.setId(null);
-        return modelMapper.map(petRepository.save(item), PetDto.class);
+        return modelMapper.map(petRepository.save(item), PetDtoResponse.class);
     }
 
     @Override
-    public PetDto update(PetDto pet) {
+    public PetDtoResponse update(PetDtoRequest pet) {
         Pet item = modelMapper.map(pet, Pet.class); 
-        return modelMapper.map(petRepository.save(item), PetDto.class);
+        return modelMapper.map(petRepository.save(item), PetDtoResponse.class);
     }
 
     @Override

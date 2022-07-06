@@ -2,12 +2,13 @@ package com.artplan.pets.service;
 
 import java.util.List;
 
-import com.artplan.pets.dto.PetDto;
+import com.artplan.pets.dto.PetDtoRequest;
+import com.artplan.pets.dto.PetDtoResponse;
 
 public interface PetService {
-    List<PetDto> findAll();
-    PetDto getById(Long id);
-    PetDto add(PetDto pet);
-    PetDto update(PetDto pet);
+    List<PetDtoResponse> findAll();
+    PetDtoResponse getById(Long id);
+    PetDtoResponse add(PetDtoRequest pet);
+    PetDtoResponse update(PetDtoRequest pet);
     void delete(Long id);
 }
