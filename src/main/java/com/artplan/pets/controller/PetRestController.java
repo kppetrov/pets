@@ -1,5 +1,6 @@
 package com.artplan.pets.controller;
 
+import java.security.Principal;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,7 +19,7 @@ import com.artplan.pets.dto.PetDtoResponse;
 import com.artplan.pets.service.PetService;
 
 @RestController
-@RequestMapping("/api")
+@RequestMapping("/api/pets")
 public class PetRestController {
 
     private PetService petService;
@@ -28,31 +29,37 @@ public class PetRestController {
         this.petService = petService;
     }
 
-    @GetMapping("/pets")
+    @GetMapping
     @PreAuthorize("hasAuthority('pet:read')")
     public List<PetDtoResponse> getAll() {
         return petService.findAll();
     }
+    
+    @GetMapping("/my")
+    @PreAuthorize("hasAuthority('pet:read')")
+    public List<PetDtoResponse> getAll(Principal principal) {
+        return petService.findUserPets(principal.getName());
+    }
 
-    @GetMapping("/pets/{id}")
+    @GetMapping("/{id}")
     @PreAuthorize("hasAuthority('pet:read')")
     public PetDtoResponse getPet(@PathVariable Long id) {
         return petService.getById(id);
     }
 
-    @PostMapping("/pets")
+    @PostMapping
     @PreAuthorize("hasAuthority('pet:write')")
-    public PetDtoResponse addPet(@RequestBody PetDtoRequest pet) {
-        return petService.add(pet);
+    public PetDtoResponse addPet(@RequestBody PetDtoRequest pet, Principal principal) {
+        return petService.add(pet, principal.getName());
     }
 
-    @PutMapping("/pets")
+    @PutMapping
     @PreAuthorize("hasAuthority('pet:write')")
     public PetDtoResponse updatePet(@RequestBody PetDtoRequest pet) {
         return petService.update(pet);
     }
 
-    @DeleteMapping("/pets/{id}")
+    @DeleteMapping("/{id}")
     @PreAuthorize("hasAuthority('pet:write')")
     public void deletePet(@PathVariable Long id) {
         petService.delete(id);
