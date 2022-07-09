@@ -3,8 +3,9 @@ package com.artplan.pets.entity;
 public enum Permission {
 
     PET_READ("pet:read"), 
-    PET_WRITE("pet:write"),
-    TYPE_READ("type:read"),
+    PET_WRITE("pet:write"), 
+    TYPE_READ("type:read"), 
+    TYPE_READ_ALL("type:read_all"),
     TYPE_WRITE("type:write");
 
     private final String value;

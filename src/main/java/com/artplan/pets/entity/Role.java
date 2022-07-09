@@ -6,7 +6,9 @@ import java.util.stream.Collectors;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
 public enum Role {
-    ADMIN(Set.of(Permission.PET_READ, Permission.PET_WRITE, Permission.TYPE_READ, Permission.TYPE_WRITE)), 
+
+    ADMIN(Set.of(Permission.PET_READ, Permission.PET_WRITE, Permission.TYPE_READ, Permission.TYPE_READ_ALL,
+            Permission.TYPE_WRITE)),
     USER(Set.of(Permission.PET_READ, Permission.PET_WRITE, Permission.TYPE_READ));
 
     private final Set<Permission> permissions;
@@ -20,9 +22,8 @@ public enum Role {
     }
 
     public Set<SimpleGrantedAuthority> getAuthoritys() {
-        return getPermissions().stream()
-                .map(p -> new SimpleGrantedAuthority(p.getPermission()))
+        return getPermissions().stream().map(p -> new SimpleGrantedAuthority(p.getPermission()))
                 .collect(Collectors.toSet());
-
     }
+
 }
