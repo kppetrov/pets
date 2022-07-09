@@ -2,6 +2,7 @@ package com.artplan.pets.service;
 
 import java.util.List;
 
+import com.artplan.pets.dto.ApiResponse;
 import com.artplan.pets.dto.TypeDto;
 
 public interface TypeService {
@@ -9,5 +10,5 @@ public interface TypeService {
     TypeDto getById(Long id);
     TypeDto add(TypeDto typeDto);
     TypeDto update(TypeDto typeDto);
-    void delete(Long id);
+    ApiResponse delete(Long id);
 }
