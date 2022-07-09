@@ -34,7 +34,7 @@ public class Pet {
     private String name;
 
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "type_id", nullable=false, updatable=false)
+    @JoinColumn(name = "type_id", nullable=false)
     private Type type;
 
     @Column(name = "gender", nullable = false, length = 6)
