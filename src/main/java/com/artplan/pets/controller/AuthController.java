@@ -47,17 +47,14 @@ public class AuthController {
 
     @PostMapping("/register")
     public ResponseEntity<ApiResponse> register(@RequestBody LoginRequest loginRequest, HttpServletRequest request) {
-
-        // todo check name
-
-        userService.add(new User(loginRequest.getName(), passwordEncoder.encode(loginRequest.getPassword())));
-        authenticateUserAndSetSession(request, loginRequest.getName(), loginRequest.getPassword());
+        userService.add(new User(loginRequest.getUsername(), passwordEncoder.encode(loginRequest.getPassword())));
+        authenticateUserAndSetSession(request, loginRequest.getUsername(), loginRequest.getPassword());
         return ResponseEntity.ok(new ApiResponse(Boolean.TRUE, "User registered successfully"));
     }
 
     @PostMapping("/login")
     public ResponseEntity<ApiResponse> login(@RequestBody LoginRequest loginRequest, HttpServletRequest request) {
-        authenticateUserAndSetSession(request, loginRequest.getName(), loginRequest.getPassword());
+        authenticateUserAndSetSession(request, loginRequest.getUsername(), loginRequest.getPassword());
         return ResponseEntity.ok(new ApiResponse(Boolean.TRUE, "Authentication successfully"));
     }
 
