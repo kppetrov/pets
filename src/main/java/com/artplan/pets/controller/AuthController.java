@@ -59,9 +59,10 @@ public class AuthController {
     }
 
     @PostMapping("/logout")
-    public void logout(HttpServletRequest request, HttpServletResponse resource) {
+    public ResponseEntity<ApiResponse> logout(HttpServletRequest request, HttpServletResponse resource) {
         SecurityContextLogoutHandler securityContextLogoutHandler = new SecurityContextLogoutHandler();
         securityContextLogoutHandler.logout(request, resource, null);
+        return ResponseEntity.ok(new ApiResponse(Boolean.TRUE, "Successful logout"));
     }
 
     private void authenticateUserAndSetSession(HttpServletRequest request, String username, String password) {
