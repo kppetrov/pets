@@ -2,6 +2,7 @@ package com.artplan.pets.controller;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -46,14 +47,14 @@ public class AuthController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<ApiResponse> register(@RequestBody LoginRequest loginRequest, HttpServletRequest request) {
+    public ResponseEntity<ApiResponse> register(@Valid @RequestBody LoginRequest loginRequest, HttpServletRequest request) {
         userService.add(new User(loginRequest.getUsername(), passwordEncoder.encode(loginRequest.getPassword())));
         authenticateUserAndSetSession(request, loginRequest.getUsername(), loginRequest.getPassword());
         return ResponseEntity.ok(new ApiResponse(Boolean.TRUE, "User registered successfully"));
     }
 
     @PostMapping("/login")
-    public ResponseEntity<ApiResponse> login(@RequestBody LoginRequest loginRequest, HttpServletRequest request) {
+    public ResponseEntity<ApiResponse> login(@Valid @RequestBody LoginRequest loginRequest, HttpServletRequest request) {
         authenticateUserAndSetSession(request, loginRequest.getUsername(), loginRequest.getPassword());
         return ResponseEntity.ok(new ApiResponse(Boolean.TRUE, "Authentication successfully"));
     }
