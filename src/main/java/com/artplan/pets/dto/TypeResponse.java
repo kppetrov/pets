@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class TypeDto {
+public class TypeResponse {
     private Long id;
     private String name;
 }

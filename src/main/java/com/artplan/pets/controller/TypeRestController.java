@@ -2,6 +2,8 @@ package com.artplan.pets.controller;
 
 import java.util.List;
 
+import javax.validation.Valid;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -16,7 +18,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.artplan.pets.dto.ApiResponse;
-import com.artplan.pets.dto.TypeDto;
+import com.artplan.pets.dto.TypeRequest;
+import com.artplan.pets.dto.TypeResponse;
 import com.artplan.pets.service.TypeService;
 
 @RestController
@@ -32,26 +35,26 @@ public class TypeRestController {
 
     @GetMapping
     @PreAuthorize("hasAuthority('type:read')")
-    public ResponseEntity<List<TypeDto>> getAll() {
+    public ResponseEntity<List<TypeResponse>> getAll() {
         return new ResponseEntity<>(typeService.findAll(), HttpStatus.OK);
     }
 
     @GetMapping("/{id}")
     @PreAuthorize("hasAuthority('type:read')")
-    public ResponseEntity<TypeDto> getType(@PathVariable Long id) {
+    public ResponseEntity<TypeResponse> getType(@Valid @PathVariable Long id) {
         return new ResponseEntity<>(typeService.getById(id), HttpStatus.OK);
     }
 
     @PostMapping
     @PreAuthorize("hasAuthority('type:write')")
-    public ResponseEntity<TypeDto> addType(@RequestBody TypeDto typeDto) {
-        return new ResponseEntity<>(typeService.add(typeDto), HttpStatus.CREATED);
+    public ResponseEntity<TypeResponse> addType(@Valid @RequestBody TypeRequest typeRequest) {
+        return new ResponseEntity<>(typeService.add(typeRequest), HttpStatus.CREATED);
     }
 
-    @PutMapping
+    @PutMapping("/{id}")
     @PreAuthorize("hasAuthority('type:write')")
-    public ResponseEntity<TypeDto> updateType(@RequestBody TypeDto typeDto) {
-        return new ResponseEntity<>(typeService.update(typeDto), HttpStatus.OK);
+    public ResponseEntity<TypeResponse> updateType(@Valid @RequestBody TypeRequest typeRequest, @PathVariable Long id) {
+        return new ResponseEntity<>(typeService.update(typeRequest, id), HttpStatus.OK);
     }
 
     @DeleteMapping("/{id}")
