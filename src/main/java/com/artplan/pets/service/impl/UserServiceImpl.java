@@ -8,13 +8,14 @@ import org.springframework.stereotype.Service;
 import com.artplan.pets.dto.UserIdentityAvailability;
 import com.artplan.pets.entity.Role;
 import com.artplan.pets.entity.User;
+import com.artplan.pets.exception.BadRequestException;
 import com.artplan.pets.repository.UserRepository;
 import com.artplan.pets.service.UserService;
 
 @Service
 @Transactional
 public class UserServiceImpl implements UserService {
-    
+
     private UserRepository userRepository;
 
     @Autowired
@@ -24,6 +25,10 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User add(User user) {
+        if (Boolean.TRUE.equals(userRepository.existsByUsername(user.getUsername()))) {
+            throw new BadRequestException("Username is already taken");
+        }
+
         user.setId(null);
         if (user.getRole() == null) {
             user.setRole(Role.USER);
