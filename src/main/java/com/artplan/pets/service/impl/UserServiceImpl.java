@@ -1,12 +1,13 @@
 package com.artplan.pets.service.impl;
 
+import static com.artplan.pets.utils.AppConstants.DEFAULT_ROLE;
+
 import javax.transaction.Transactional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.artplan.pets.dto.UserIdentityAvailability;
-import com.artplan.pets.entity.Role;
 import com.artplan.pets.entity.User;
 import com.artplan.pets.exception.BadRequestException;
 import com.artplan.pets.repository.UserRepository;
@@ -31,7 +32,7 @@ public class UserServiceImpl implements UserService {
 
         user.setId(null);
         if (user.getRole() == null) {
-            user.setRole(Role.USER);
+            user.setRole(DEFAULT_ROLE);
         }
         return userRepository.save(user);
     }
