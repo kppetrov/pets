@@ -48,7 +48,7 @@ public class AuthController {
 
     @PostMapping("/register")
     public ResponseEntity<ApiResponse> register(@Valid @RequestBody LoginRequest loginRequest, HttpServletRequest request) {
-        userService.add(new User(loginRequest.getUsername(), passwordEncoder.encode(loginRequest.getPassword())));
+        userService.addUserWithDefaultRole(new User(loginRequest.getUsername(), passwordEncoder.encode(loginRequest.getPassword())));
         authenticateUserAndSetSession(request, loginRequest.getUsername(), loginRequest.getPassword());
         return ResponseEntity.ok(new ApiResponse(Boolean.TRUE, "User registered successfully"));
     }

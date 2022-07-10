@@ -1,6 +1,6 @@
 package com.artplan.pets.service.impl;
 
-import static com.artplan.pets.utils.AppConstants.DEFAULT_ROLE;
+import static com.artplan.pets.utils.AppConstants.DEFOULT_ROLE;
 
 import javax.transaction.Transactional;
 
@@ -16,7 +16,9 @@ import com.artplan.pets.service.UserService;
 @Service
 @Transactional
 public class UserServiceImpl implements UserService {
-
+    
+    public static final String USERNAME_IS_TAKEN_MSG = "Username is already taken";
+    
     private UserRepository userRepository;
 
     @Autowired
@@ -25,15 +27,11 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User add(User user) {
+    public User addUserWithDefaultRole(User user) {
         if (Boolean.TRUE.equals(userRepository.existsByUsername(user.getUsername()))) {
-            throw new BadRequestException("Username is already taken");
+            throw new BadRequestException(USERNAME_IS_TAKEN_MSG);
         }
-
-        user.setId(null);
-        if (user.getRole() == null) {
-            user.setRole(DEFAULT_ROLE);
-        }
+        user.setRole(DEFOULT_ROLE);
         return userRepository.save(user);
     }
 
