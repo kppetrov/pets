@@ -12,10 +12,10 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class PetDtoRequest {
+public class PetResponse {
     private Long id;
     private String name;
-    private Long typeId;
+    private String type;
     private String gender;
     @DateTimeFormat(iso = ISO.DATE)
     private LocalDate birthdate;

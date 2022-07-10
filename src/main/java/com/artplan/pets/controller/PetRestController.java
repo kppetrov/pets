@@ -3,6 +3,8 @@ package com.artplan.pets.controller;
 import java.security.Principal;
 import java.util.List;
 
+import javax.validation.Valid;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -17,8 +19,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.artplan.pets.dto.ApiResponse;
-import com.artplan.pets.dto.PetDtoRequest;
-import com.artplan.pets.dto.PetDtoResponse;
+import com.artplan.pets.dto.PetRequest;
+import com.artplan.pets.dto.PetResponse;
 import com.artplan.pets.service.PetService;
 
 @RestController
@@ -34,32 +36,33 @@ public class PetRestController {
 
     @GetMapping("/all")
     @PreAuthorize("hasAuthority('pet:read_all')")
-    public ResponseEntity<List<PetDtoResponse>> getAll() {
+    public ResponseEntity<List<PetResponse>> getAll() {
         return new ResponseEntity<>(petService.findAll(), HttpStatus.OK);
     }
 
     @GetMapping
     @PreAuthorize("hasAuthority('pet:read')")
-    public ResponseEntity<List<PetDtoResponse>> getUserPets(Principal principal) {
+    public ResponseEntity<List<PetResponse>> getUserPets(Principal principal) {
         return new ResponseEntity<>(petService.findUserPets(principal.getName()), HttpStatus.OK);
     }
 
     @GetMapping("/{id}")
     @PreAuthorize("hasAuthority('pet:read')")
-    public ResponseEntity<PetDtoResponse> getPet(@PathVariable Long id) {
+    public ResponseEntity<PetResponse> getPet(@PathVariable Long id) {
         return new ResponseEntity<>(petService.getById(id), HttpStatus.OK);
     }
 
     @PostMapping
     @PreAuthorize("hasAuthority('pet:write')")
-    public ResponseEntity<PetDtoResponse> addPet(@RequestBody PetDtoRequest pet, Principal principal) {
+    public ResponseEntity<PetResponse> addPet(@Valid @RequestBody PetRequest pet, Principal principal) {
         return new ResponseEntity<>(petService.add(pet, principal.getName()), HttpStatus.CREATED);
     }
 
-    @PutMapping
+    @PutMapping("/{id}")
     @PreAuthorize("hasAuthority('pet:write')")
-    public ResponseEntity<PetDtoResponse> updatePet(@RequestBody PetDtoRequest pet, Principal principal) {
-        return new ResponseEntity<>(petService.update(pet, principal.getName()), HttpStatus.OK);
+    public ResponseEntity<PetResponse> updatePet(@Valid @RequestBody PetRequest pet, @PathVariable Long id,
+            Principal principal) {
+        return new ResponseEntity<>(petService.update(pet, id, principal.getName()), HttpStatus.OK);
     }
 
     @DeleteMapping("/{id}")

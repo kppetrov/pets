@@ -5,14 +5,14 @@ import java.util.stream.Collectors;
 
 import javax.transaction.Transactional;
 
-import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.artplan.pets.dto.ApiResponse;
-import com.artplan.pets.dto.PetDtoRequest;
-import com.artplan.pets.dto.PetDtoResponse;
+import com.artplan.pets.dto.PetRequest;
+import com.artplan.pets.dto.PetResponse;
 import com.artplan.pets.entity.Pet;
+import com.artplan.pets.entity.Type;
 import com.artplan.pets.entity.User;
 import com.artplan.pets.exception.BadRequestException;
 import com.artplan.pets.exception.ResourceNotFoundException;
@@ -28,13 +28,12 @@ public class PetServiceImpl implements PetService {
     private PetRepository petRepository;
     private TypeRepository typeRepository;
     private UserRepository userRepository;
-    private ModelMapper modelMapper;
 
     @Autowired
     public void setPetRepository(PetRepository petRepository) {
         this.petRepository = petRepository;
     }
-    
+
     @Autowired
     public void setTypeRepository(TypeRepository typeRepository) {
         this.typeRepository = typeRepository;
@@ -45,76 +44,103 @@ public class PetServiceImpl implements PetService {
         this.userRepository = userRepository;
     }
 
-    @Autowired
-    public void setModelMapper(ModelMapper modelMapper) {
-        this.modelMapper = modelMapper;
-    }
-
     @Override
-    public List<PetDtoResponse> findAll() {
+    public List<PetResponse> findAll() {
         return petRepository.findAll()
                 .stream()
-                .map(pet -> modelMapper.map(pet, PetDtoResponse.class))
+                .map(this::toResponse)
                 .collect(Collectors.toList());
     }
 
     @Override
-    public PetDtoResponse getById(Long id) {
+    public PetResponse getById(Long id) {
         Pet pet = petRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException(String.format("Pet not found with id: '%s'", id)));
+
+        return toResponse(pet);
+    }
+
+    @Override
+    public PetResponse add(PetRequest petRequest, String username) {
+        User owner = userRepository.findByUsername(username).orElseThrow(
+                () -> new ResourceNotFoundException(String.format("Owner not found with username: '%s'", username)));
         
-        return modelMapper.map(pet, PetDtoResponse.class);
-    }
-
-    @Override
-    public PetDtoResponse add(PetDtoRequest petDto, String username) {
-        User owner = userRepository.findByUsername(username)
-                .orElseThrow(() -> new ResourceNotFoundException(String.format("Owner not found with username: '%s'", username)));        
-        if(Boolean.TRUE.equals(petRepository.existsByNameAndOwner(username, owner))) {
-            throw new BadRequestException("Name is already taken");
-        }         
-        Pet pet = modelMapper.map(petDto, Pet.class);
-        pet.setId(null);
-        pet.setOwner(owner);
-        return modelMapper.map(petRepository.save(pet), PetDtoResponse.class);
-    }
-
-    @Override
-    public PetDtoResponse update(PetDtoRequest petDto, String username) {
-        Pet pet = petRepository.findById(petDto.getId()).orElseThrow(
-                () -> new ResourceNotFoundException(String.format("Pet not found with id: '%s'", petDto.getId())));
-        if(typeRepository.findById(petDto.getTypeId()).isEmpty()) {
-            throw new ResourceNotFoundException(String.format("Type not found with id: '%s'", petDto.getTypeId())); 
+        if (Boolean.TRUE.equals(petRepository.existsByNameAndOwner(petRequest.getName(), owner))) {
+            throw new BadRequestException("Pet name is already taken");
         }
+        
+        Type type = typeRepository.findById(petRequest.getTypeId()).orElseThrow(() -> new ResourceNotFoundException(
+                String.format("Type not found with id: '%s'", petRequest.getTypeId())));
+
+        Pet pet = toEntity(petRequest);
+        pet.setType(type);
+        pet.setOwner(owner);
+        return toResponse(petRepository.save(pet));
+    }
+
+    @Override
+    public PetResponse update(PetRequest petRequest, Long id, String username) {
+        Pet pet = petRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException(String.format("Pet not found with id: '%s'", id)));
+
+        Type type = typeRepository.findById(petRequest.getTypeId()).orElseThrow(() -> new ResourceNotFoundException(
+                String.format("Type not found with id: '%s'", petRequest.getTypeId())));
+
         if (!pet.getOwner().getUsername().equals(username)) {
             throw new UnauthorizedException("Don't have permission to edit this pet");
-        }        
-        if(Boolean.TRUE.equals(petRepository.existsByNameAndOwner(username, pet.getOwner()))) {
+        }
+
+        if (Boolean.TRUE.equals(petRepository.existsByNameAndOwner(petRequest.getName(), pet.getOwner()))) {
             throw new BadRequestException("Name is already taken");
         }
-        Pet newPet = modelMapper.map(petDto, Pet.class);
-        return modelMapper.map(petRepository.save(newPet), PetDtoResponse.class);
+
+        pet.setName(petRequest.getName());
+        pet.setType(type);
+        pet.setGender(petRequest.getGender());
+        pet.setBirthdate(petRequest.getBirthdate());
+        return toResponse(petRepository.save(pet));
     }
 
     @Override
     public ApiResponse delete(Long id, String username) {
-        Pet pet = petRepository.findById(id).orElseThrow(
-                () -> new ResourceNotFoundException(String.format("Pet not found with id: '%s'", id)));        
+        Pet pet = petRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException(String.format("Pet not found with id: '%s'", id)));
+        
         if (!pet.getOwner().getUsername().equals(username)) {
             throw new UnauthorizedException("Don't have permission to delete this pet");
-        }        
+        }
+        
         petRepository.deleteById(id);
         return new ApiResponse(true, "You successfully deleted pet");
     }
 
     @Override
-    public List<PetDtoResponse> findUserPets(String username) {
-        User user = userRepository.findByUsername(username)
-                .orElseThrow(() -> new ResourceNotFoundException(String.format("Owner not found with username: '%s'", username)));        
+    public List<PetResponse> findUserPets(String username) {
+        User user = userRepository.findByUsername(username).orElseThrow(
+                () -> new ResourceNotFoundException(String.format("Owner not found with username: '%s'", username)));
+        
         return petRepository.findByOwner(user)
                 .stream()
-                .map(pet -> modelMapper.map(pet, PetDtoResponse.class))
+                .map(this::toResponse)
                 .collect(Collectors.toList());
     }
 
+    private Pet toEntity(PetRequest petRequest) {
+        Pet pet =  new Pet();
+        pet.setName(petRequest.getName());
+        pet.setGender(petRequest.getGender());
+        pet.setBirthdate(petRequest.getBirthdate());
+        return pet;
+    }
+    
+    private PetResponse toResponse(Pet pet) {
+        PetResponse petResponse =  new PetResponse();
+        petResponse.setId(pet.getId());
+        petResponse.setName(pet.getName());
+        petResponse.setType(pet.getType().getName());
+        petResponse.setGender(pet.getGender().getValue());
+        petResponse.setBirthdate(pet.getBirthdate());
+        return petResponse;
+    }
+    
 }
