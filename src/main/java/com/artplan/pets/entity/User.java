@@ -9,8 +9,6 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
-import org.hibernate.annotations.ColumnDefault;
-
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -35,7 +33,6 @@ public class User {
 
     @Column(name = "role", nullable = false, length = 20)
     @Enumerated(EnumType.STRING)
-    @ColumnDefault("USER")
     private Role role;
 
     public User(String username, String password) {
