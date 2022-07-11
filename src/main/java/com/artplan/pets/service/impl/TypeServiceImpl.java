@@ -20,6 +20,10 @@ import com.artplan.pets.service.TypeService;
 @Service
 @Transactional
 public class TypeServiceImpl implements TypeService {
+    
+    public static final String NOT_FOUND = "Type not found with id: '%s'"; 
+    public static final String NAME_IS_ALREADY_TAKEN = "Type name is already taken: '%s'"; 
+    public static final String DELETED_SUCCESSFULLY = "You successfully deleted type"; 
 
     private TypeRepository typeRepository;
 
@@ -39,14 +43,14 @@ public class TypeServiceImpl implements TypeService {
     @Override
     public TypeResponse getById(Long id) {
         Type type = typeRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException(String.format("Type not found with id: '%s'", id)));
+                .orElseThrow(() -> new ResourceNotFoundException(String.format(NOT_FOUND, id)));
         return toResponse(type);
     }
 
     @Override
     public TypeResponse add(TypeRequest typeRequest) {
         if (Boolean.TRUE.equals(typeRepository.existsByName(typeRequest.getName()))) {
-            throw new BadRequestException("Name is already taken");
+            throw new BadRequestException(String.format(NAME_IS_ALREADY_TAKEN, typeRequest.getName()));
         }
         Type type = toEntity(typeRequest);
         return toResponse(typeRepository.save(type));
@@ -55,21 +59,21 @@ public class TypeServiceImpl implements TypeService {
     @Override
     public TypeResponse update(TypeRequest typeRequest, Long id) {
         if (Boolean.TRUE.equals(typeRepository.existsByName(typeRequest.getName()))) {
-            throw new BadRequestException("Name is already taken");
+            throw new BadRequestException(String.format(NAME_IS_ALREADY_TAKEN, typeRequest.getName()));
         }
         Type type = typeRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException(String.format("Type not found with id: '%s'", id)));        
+                .orElseThrow(() -> new ResourceNotFoundException(String.format(NOT_FOUND, id)));        
         type.setName(typeRequest.getName());
         return toResponse(typeRepository.save(type));
     }
 
     @Override
     public ApiResponse delete(Long id) {
-        if (Boolean.TRUE.equals(typeRepository.existsById(id))) {
-            throw new ResourceNotFoundException(String.format("Type not found with id: '%s'", id));
+        if (typeRepository.findById(id).isEmpty()) {
+            throw new ResourceNotFoundException(String.format(NOT_FOUND, id));
         }
         typeRepository.deleteById(id);
-        return new ApiResponse(true, "You successfully deleted pet");
+        return new ApiResponse(true, DELETED_SUCCESSFULLY);
     }
     
     private Type toEntity(TypeRequest typeRequest) {
