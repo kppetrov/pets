@@ -17,7 +17,7 @@ import com.artplan.pets.service.UserService;
 @Transactional
 public class UserServiceImpl implements UserService {
     
-    public static final String USERNAME_IS_TAKEN_MSG = "Username is already taken";
+    public static final String USERNAME_IS_TAKEN_MSG = "Username is already taken: '%s'";
     
     private UserRepository userRepository;
 
@@ -29,7 +29,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public User addUserWithDefaultRole(User user) {
         if (Boolean.TRUE.equals(userRepository.existsByUsername(user.getUsername()))) {
-            throw new BadRequestException(USERNAME_IS_TAKEN_MSG);
+            throw new BadRequestException(String.format(USERNAME_IS_TAKEN_MSG, user.getUsername()));
         }
         user.setRole(DEFOULT_ROLE);
         return userRepository.save(user);
