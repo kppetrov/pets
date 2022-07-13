@@ -11,8 +11,11 @@ import org.springframework.web.bind.annotation.RestController;
 import com.artplan.pets.dto.UserIdentityAvailability;
 import com.artplan.pets.service.UserService;
 
+import lombok.extern.slf4j.Slf4j;
+
 @RestController
 @RequestMapping("/api/users")
+@Slf4j
 public class UserRestController {
     
     private UserService userService;
@@ -25,6 +28,9 @@ public class UserRestController {
     @GetMapping("/checkUsernameAvailability")
     public ResponseEntity<UserIdentityAvailability> checkUsernameAvailability(
             @RequestParam(value = "username") String username) {
+        if (log.isDebugEnabled()) {
+            log.info("check username {}", username);   
+        }
         UserIdentityAvailability userIdentityAvailability = userService.checkUsernameAvailability(username);
         return new ResponseEntity<>(userIdentityAvailability, HttpStatus.OK);
     }

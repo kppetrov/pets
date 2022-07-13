@@ -23,8 +23,11 @@ import com.artplan.pets.dto.LoginRequest;
 import com.artplan.pets.entity.User;
 import com.artplan.pets.service.UserService;
 
+import lombok.extern.slf4j.Slf4j;
+
 @RestController
 @RequestMapping("/api/auth")
+@Slf4j
 public class AuthRestController {
     
     public static final String REGISTER_SUCCESSFULY = "User registered successfully";
@@ -52,6 +55,7 @@ public class AuthRestController {
 
     @PostMapping("/register")
     public ResponseEntity<ApiResponse> register(@Valid @RequestBody LoginRequest loginRequest, HttpServletRequest request) {
+        log.info("register {}", loginRequest.getUsername());
         userService.addUserWithDefaultRole(new User(loginRequest.getUsername(), passwordEncoder.encode(loginRequest.getPassword())));
         authenticateUserAndSetSession(request, loginRequest.getUsername(), loginRequest.getPassword());
         return ResponseEntity.ok(new ApiResponse(Boolean.TRUE, REGISTER_SUCCESSFULY));
@@ -59,12 +63,14 @@ public class AuthRestController {
 
     @PostMapping("/login")
     public ResponseEntity<ApiResponse> login(@Valid @RequestBody LoginRequest loginRequest, HttpServletRequest request) {
+        log.info("login {}", loginRequest.getUsername());
         authenticateUserAndSetSession(request, loginRequest.getUsername(), loginRequest.getPassword());
         return ResponseEntity.ok(new ApiResponse(Boolean.TRUE, LOGIN_SUCCESSFULY));
     }
 
     @PostMapping("/logout")
     public ResponseEntity<ApiResponse> logout(HttpServletRequest request, HttpServletResponse resource) {
+        log.info("logout {}", request.getUserPrincipal().getName());
         SecurityContextLogoutHandler securityContextLogoutHandler = new SecurityContextLogoutHandler();
         securityContextLogoutHandler.logout(request, resource, null);
         return ResponseEntity.ok(new ApiResponse(Boolean.TRUE, LOGOUT_SUCCESSFULY));

@@ -22,8 +22,11 @@ import com.artplan.pets.dto.TypeRequest;
 import com.artplan.pets.dto.TypeResponse;
 import com.artplan.pets.service.TypeService;
 
+import lombok.extern.slf4j.Slf4j;
+
 @RestController
 @RequestMapping("/api/types")
+@Slf4j
 public class TypeRestController {
 
     private TypeService typeService;
@@ -36,30 +39,43 @@ public class TypeRestController {
     @GetMapping
     @PreAuthorize("hasAuthority('type:read')")
     public ResponseEntity<List<TypeResponse>> getAll() {
+        log.debug("get all types");
         return new ResponseEntity<>(typeService.findAll(), HttpStatus.OK);
     }
 
     @GetMapping("/{id}")
     @PreAuthorize("hasAuthority('type:read')")
     public ResponseEntity<TypeResponse> getType(@Valid @PathVariable Long id) {
+        if (log.isDebugEnabled()) {
+            log.info("get type {}", id);   
+        }
         return new ResponseEntity<>(typeService.getById(id), HttpStatus.OK);
     }
 
     @PostMapping
     @PreAuthorize("hasAuthority('type:write')")
     public ResponseEntity<TypeResponse> addType(@Valid @RequestBody TypeRequest typeRequest) {
+        if (log.isDebugEnabled()) {
+            log.info("add type {}", typeRequest);   
+        }
         return new ResponseEntity<>(typeService.add(typeRequest), HttpStatus.CREATED);
     }
 
     @PutMapping("/{id}")
     @PreAuthorize("hasAuthority('type:write')")
     public ResponseEntity<TypeResponse> updateType(@Valid @RequestBody TypeRequest typeRequest, @PathVariable Long id) {
+        if (log.isDebugEnabled()) {
+            log.info("update type {} {} ", id, typeRequest);   
+        }
         return new ResponseEntity<>(typeService.update(typeRequest, id), HttpStatus.OK);
     }
 
     @DeleteMapping("/{id}")
     @PreAuthorize("hasAuthority('type:write')")
     public ResponseEntity<ApiResponse> deleteType(@PathVariable Long id) {
+        if (log.isDebugEnabled()) {
+            log.info("delete type {}", id);   
+        }
         return new ResponseEntity<>(typeService.delete(id), HttpStatus.OK);
     }
 }

@@ -21,12 +21,16 @@ import com.artplan.pets.exception.FailAttemptsLimitIsOverException;
 import com.artplan.pets.exception.ResourceNotFoundException;
 import com.artplan.pets.exception.UnauthorizedException;
 
+import lombok.extern.slf4j.Slf4j;
+
 @ControllerAdvice
+@Slf4j
 public class ExceptionHandlerRestController {
 
     @ExceptionHandler(UnauthorizedException.class)
     @ResponseBody
     public ResponseEntity<ExceptionResponse> resolveException(UnauthorizedException exception) {
+        log.info(exception.getMessage());
         ExceptionResponse exceptionResponse = new ExceptionResponse(HttpStatus.UNAUTHORIZED, exception.getMessage());
         return new ResponseEntity<>(exceptionResponse, HttpStatus.UNAUTHORIZED);
     }
@@ -34,6 +38,7 @@ public class ExceptionHandlerRestController {
     @ExceptionHandler(ResourceNotFoundException.class)
     @ResponseBody
     public ResponseEntity<ExceptionResponse> resolveException(ResourceNotFoundException exception) {
+        log.info(exception.getMessage());
         ExceptionResponse exceptionResponse = new ExceptionResponse(HttpStatus.NOT_FOUND, exception.getMessage());
         return new ResponseEntity<>(exceptionResponse, HttpStatus.NOT_FOUND);
     }
@@ -41,6 +46,7 @@ public class ExceptionHandlerRestController {
     @ExceptionHandler(BadRequestException.class)
     @ResponseBody
     public ResponseEntity<ExceptionResponse> resolveException(BadRequestException exception) {
+        log.info(exception.getMessage());
         ExceptionResponse exceptionResponse = new ExceptionResponse(HttpStatus.BAD_REQUEST, exception.getMessage());
         return new ResponseEntity<>(exceptionResponse, HttpStatus.BAD_REQUEST);
     }
@@ -48,6 +54,7 @@ public class ExceptionHandlerRestController {
     @ExceptionHandler(FailAttemptsLimitIsOverException.class)
     @ResponseBody
     public ResponseEntity<ExceptionResponse> resolveException(FailAttemptsLimitIsOverException exception) {
+        log.info(exception.getMessage());
         ExceptionResponse exceptionResponse = new ExceptionResponse(HttpStatus.UNAUTHORIZED, exception.getMessage());
         return new ResponseEntity<>(exceptionResponse, HttpStatus.UNAUTHORIZED);
     }    
@@ -60,6 +67,7 @@ public class ExceptionHandlerRestController {
         for (FieldError error : fieldErrors) {
             messages.add(error.getField() + " - " + error.getDefaultMessage());
         }
+        log.info(messages.toString());
         return new ResponseEntity<>(new ExceptionResponse(HttpStatus.BAD_REQUEST, messages), HttpStatus.BAD_REQUEST);
     }
 
@@ -68,6 +76,7 @@ public class ExceptionHandlerRestController {
     public ResponseEntity<ExceptionResponse> resolveException(MethodArgumentTypeMismatchException ex) {
         String message = "Parameter '" + ex.getParameter().getParameterName() + "' must be '"
                 + Objects.requireNonNull(ex.getRequiredType()).getSimpleName() + "'";
+        log.info(message);
         return new ResponseEntity<>(new ExceptionResponse(HttpStatus.BAD_REQUEST, message), HttpStatus.BAD_REQUEST);
     }
 
@@ -76,6 +85,7 @@ public class ExceptionHandlerRestController {
     public ResponseEntity<ExceptionResponse> resolveException(HttpRequestMethodNotSupportedException ex) {
         String message = "Request method '" + ex.getMethod() + "' not supported. List of all supported methods - "
                 + ex.getSupportedHttpMethods();
+        log.info(message);
         return new ResponseEntity<>(new ExceptionResponse(HttpStatus.METHOD_NOT_ALLOWED, message),
                 HttpStatus.METHOD_NOT_ALLOWED);
     }
@@ -84,6 +94,7 @@ public class ExceptionHandlerRestController {
     @ResponseBody
     public ResponseEntity<ExceptionResponse> resolveException(HttpMessageNotReadableException ex) {
         String message = "Please provide Request Body in valid JSON format";
+        log.info(message);
         return new ResponseEntity<>(new ExceptionResponse(HttpStatus.BAD_REQUEST, message), HttpStatus.BAD_REQUEST);
     }
 

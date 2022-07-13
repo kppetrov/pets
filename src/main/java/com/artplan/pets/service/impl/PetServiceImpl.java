@@ -22,8 +22,11 @@ import com.artplan.pets.repository.TypeRepository;
 import com.artplan.pets.repository.UserRepository;
 import com.artplan.pets.service.PetService;
 
+import lombok.extern.slf4j.Slf4j;
+
 @Service
 @Transactional
+@Slf4j
 public class PetServiceImpl implements PetService {
     
     public static final String PET_NOT_FOUND = "Pet not found with id: '%s'";
@@ -106,6 +109,7 @@ public class PetServiceImpl implements PetService {
                 String.format(TYPE_NOT_FOUND, petRequest.getTypeId())));
 
         if (!pet.getOwner().getUsername().equals(username)) {
+            log.warn("Attempt to change pet {} user {}", id, username);
             throw new UnauthorizedException(DONT_HAVE_PERMISSION);
         }
 
@@ -126,6 +130,7 @@ public class PetServiceImpl implements PetService {
                 .orElseThrow(() -> new ResourceNotFoundException(String.format(PET_NOT_FOUND, id)));
         
         if (!pet.getOwner().getUsername().equals(username)) {
+            log.warn("Attempt to delete pet {} user {}", id, username);
             throw new UnauthorizedException(DONT_HAVE_PERMISSION);
         }
         

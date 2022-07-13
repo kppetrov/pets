@@ -14,8 +14,11 @@ import com.artplan.pets.entity.FailAttempt;
 import com.artplan.pets.repository.FailAttemptRepository;
 import com.artplan.pets.service.FailAttemptService;
 
+import lombok.extern.slf4j.Slf4j;
+
 @Service
 @Transactional
+@Slf4j
 public class FailAttemptServiceImpl implements FailAttemptService {
     
     private FailAttemptRepository failAttemptRepository;
@@ -27,16 +30,25 @@ public class FailAttemptServiceImpl implements FailAttemptService {
 
     @Override
     public void addFailAttempts(String username) {
+        if (log.isDebugEnabled()) {
+            log.debug("add fail attempt for {}", username);   
+        }
         failAttemptRepository.save(new FailAttempt(null, username, LocalDateTime.now()));
     }
 
     @Override
     public void resetFailAttempts(String username) {
+        if (log.isDebugEnabled()) {
+            log.debug("reset fail attempt for {}", username);   
+        }
         failAttemptRepository.deleteByUsername(username);
     }
     
     @Override
     public boolean failAttemptsLimitIsOver(String username) {
+        if (log.isDebugEnabled()) {
+            log.debug("check fail attempt for {}", username);   
+        }
         LocalDateTime attemptTime = LocalDateTime.now().minusMinutes(FAIL_ATTEMPT_PERIOD);
         Long attemptsCount = failAttemptRepository.countByUsernameAndAttemptTimeGreaterThan(username, attemptTime);
         return attemptsCount >= FAIL_ATTEMPT_LIMIT;

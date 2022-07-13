@@ -23,8 +23,11 @@ import com.artplan.pets.dto.PetRequest;
 import com.artplan.pets.dto.PetResponse;
 import com.artplan.pets.service.PetService;
 
+import lombok.extern.slf4j.Slf4j;
+
 @RestController
 @RequestMapping("/api/pets")
+@Slf4j
 public class PetRestController {
 
     private PetService petService;
@@ -37,24 +40,34 @@ public class PetRestController {
     @GetMapping("/all")
     @PreAuthorize("hasAuthority('pet:read_all')")
     public ResponseEntity<List<PetResponse>> getAll() {
+        log.debug("get all pets");
         return new ResponseEntity<>(petService.findAll(), HttpStatus.OK);
     }
 
     @GetMapping
     @PreAuthorize("hasAuthority('pet:read')")
     public ResponseEntity<List<PetResponse>> getUserPets(Principal principal) {
+        if (log.isDebugEnabled()) {
+            log.info("get pets for user {}", principal.getName());   
+        }
         return new ResponseEntity<>(petService.findUserPets(principal.getName()), HttpStatus.OK);
     }
 
     @GetMapping("/{id}")
     @PreAuthorize("hasAuthority('pet:read')")
     public ResponseEntity<PetResponse> getPet(@PathVariable Long id) {
+        if (log.isDebugEnabled()) {
+            log.info("get pet {}", id);   
+        }
         return new ResponseEntity<>(petService.getById(id), HttpStatus.OK);
     }
 
     @PostMapping
     @PreAuthorize("hasAuthority('pet:write')")
     public ResponseEntity<PetResponse> addPet(@Valid @RequestBody PetRequest pet, Principal principal) {
+        if (log.isDebugEnabled()) {
+            log.info("add pet {} for user {}", pet, principal.getName());   
+        }
         return new ResponseEntity<>(petService.add(pet, principal.getName()), HttpStatus.CREATED);
     }
 
@@ -62,12 +75,18 @@ public class PetRestController {
     @PreAuthorize("hasAuthority('pet:write')")
     public ResponseEntity<PetResponse> updatePet(@Valid @RequestBody PetRequest pet, @PathVariable Long id,
             Principal principal) {
+        if (log.isDebugEnabled()) {
+            log.info("update pet {} {} for user {}", id, pet, principal.getName());   
+        }
         return new ResponseEntity<>(petService.update(pet, id, principal.getName()), HttpStatus.OK);
     }
 
     @DeleteMapping("/{id}")
     @PreAuthorize("hasAuthority('pet:write')")
     public ResponseEntity<ApiResponse> deletePet(@PathVariable Long id, Principal principal) {
+        if (log.isDebugEnabled()) {
+            log.info("delete pet {} for user {}", id, principal.getName());   
+        }
         return new ResponseEntity<>(petService.delete(id, principal.getName()), HttpStatus.OK);
     }
 

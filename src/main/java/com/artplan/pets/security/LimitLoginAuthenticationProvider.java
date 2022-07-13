@@ -8,6 +8,9 @@ import org.springframework.security.core.AuthenticationException;
 import com.artplan.pets.exception.FailAttemptsLimitIsOverException;
 import com.artplan.pets.service.FailAttemptService;
 
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
 public class LimitLoginAuthenticationProvider extends DaoAuthenticationProvider {
     
     public static final String LIMIT_IS_OWER_MSG = "The limit of failed attempts for the '%s' has been exhausted";
@@ -31,6 +34,7 @@ public class LimitLoginAuthenticationProvider extends DaoAuthenticationProvider 
             failAttemptService.resetFailAttempts(authentication.getName());
             return auth;
         } catch (AuthenticationException e) {
+            log.warn("Failed authentication attempt {}", authentication.getName());
             failAttemptService.addFailAttempts(authentication.getName());
             throw e;
         }
