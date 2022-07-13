@@ -27,6 +27,7 @@ public class SecurityConfig {
         http
             .csrf().disable()
             .authorizeHttpRequests()
+            .antMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll()
             .antMatchers("/api/auth/**").permitAll()
             .antMatchers(HttpMethod.GET, "/api/users/checkUsernameAvailability").permitAll()
             .anyRequest()
