@@ -9,6 +9,8 @@ import com.artplan.pets.exception.FailAttemptsLimitIsOverException;
 import com.artplan.pets.service.FailAttemptService;
 
 public class LimitLoginAuthenticationProvider extends DaoAuthenticationProvider {
+    
+    public static final String LIMIT_IS_OWER_MSG = "The limit of failed attempts for the '%s' has been exhausted";
 
     private FailAttemptService failAttemptService;
 
@@ -21,8 +23,7 @@ public class LimitLoginAuthenticationProvider extends DaoAuthenticationProvider 
     public Authentication authenticate(Authentication authentication) throws AuthenticationException {
 
         if (failAttemptService.failAttemptsLimitIsOver(authentication.getName())) {
-            String msg = "The limit of failed attempts for the " + authentication.getName() + " has been exhausted";
-            throw new FailAttemptsLimitIsOverException(msg);
+            throw new FailAttemptsLimitIsOverException(String.format(LIMIT_IS_OWER_MSG, authentication.getName()));
         }
 
         try {

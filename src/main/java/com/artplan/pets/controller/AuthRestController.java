@@ -25,7 +25,11 @@ import com.artplan.pets.service.UserService;
 
 @RestController
 @RequestMapping("/api/auth")
-public class AuthController {
+public class AuthRestController {
+    
+    public static final String REGISTER_SUCCESSFULY = "User registered successfully";
+    public static final String LOGIN_SUCCESSFULY = "Authentication successfully";
+    public static final String LOGOUT_SUCCESSFULY = "Successful logout";
 
     private UserService userService;
     private AuthenticationManager authenticationManager;
@@ -50,20 +54,20 @@ public class AuthController {
     public ResponseEntity<ApiResponse> register(@Valid @RequestBody LoginRequest loginRequest, HttpServletRequest request) {
         userService.addUserWithDefaultRole(new User(loginRequest.getUsername(), passwordEncoder.encode(loginRequest.getPassword())));
         authenticateUserAndSetSession(request, loginRequest.getUsername(), loginRequest.getPassword());
-        return ResponseEntity.ok(new ApiResponse(Boolean.TRUE, "User registered successfully"));
+        return ResponseEntity.ok(new ApiResponse(Boolean.TRUE, REGISTER_SUCCESSFULY));
     }
 
     @PostMapping("/login")
     public ResponseEntity<ApiResponse> login(@Valid @RequestBody LoginRequest loginRequest, HttpServletRequest request) {
         authenticateUserAndSetSession(request, loginRequest.getUsername(), loginRequest.getPassword());
-        return ResponseEntity.ok(new ApiResponse(Boolean.TRUE, "Authentication successfully"));
+        return ResponseEntity.ok(new ApiResponse(Boolean.TRUE, LOGIN_SUCCESSFULY));
     }
 
     @PostMapping("/logout")
     public ResponseEntity<ApiResponse> logout(HttpServletRequest request, HttpServletResponse resource) {
         SecurityContextLogoutHandler securityContextLogoutHandler = new SecurityContextLogoutHandler();
         securityContextLogoutHandler.logout(request, resource, null);
-        return ResponseEntity.ok(new ApiResponse(Boolean.TRUE, "Successful logout"));
+        return ResponseEntity.ok(new ApiResponse(Boolean.TRUE, LOGOUT_SUCCESSFULY));
     }
 
     private void authenticateUserAndSetSession(HttpServletRequest request, String username, String password) {
